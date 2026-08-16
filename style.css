@@ -1,0 +1,247 @@
+* {
+	box-sizing: border-box;
+	margin: 0;
+	padding: 0;
+}
+
+html, body {
+	min-height: 100%;
+}
+
+body {
+	font-family: "Baloo 2", ui-rounded, system-ui, sans-serif;
+	color: #5b4a63;
+	background: linear-gradient(130deg, #e6d5f7, #ffd9c4, #f3d3ea, #d9e3fb);
+	background-size: 300% 300%;
+	animation: drift 30s ease-in-out infinite;
+}
+
+@keyframes drift {
+	0% { background-position: 0% 20%; filter: hue-rotate(0deg); }
+	50% { background-position: 100% 80%; filter: hue-rotate(24deg); }
+	100% { background-position: 0% 20%; filter: hue-rotate(0deg); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+	body {
+		animation: none;
+	}
+}
+
+.grain {
+	position: fixed;
+	inset: 0;
+	background: url("noise.png") repeat;
+	background-size: 220px 220px;
+	opacity: 0.14;
+	pointer-events: none;
+	z-index: 5;
+}
+
+.screen {
+	position: relative;
+	z-index: 2;
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+	padding: 12vh 20px 60px;
+	min-height: 100vh;
+}
+
+.wordmark {
+	font-size: clamp(3rem, 9vw, 5rem);
+	font-weight: 700;
+	letter-spacing: -0.02em;
+	color: #6d5484;
+	text-shadow: 0 2px 0 rgba(255, 255, 255, 0.5);
+	transform: rotate(-2deg);
+	margin-bottom: 42px;
+}
+
+.wordmark.small {
+	font-size: clamp(2rem, 6vw, 2.8rem);
+	margin-bottom: 28px;
+}
+
+#gateForm {
+	display: flex;
+	gap: 10px;
+}
+
+#gateInput {
+	font: inherit;
+	font-size: 1.1rem;
+	padding: 12px 22px;
+	border: none;
+	border-radius: 999px;
+	background: rgba(255, 255, 255, 0.65);
+	color: #5b4a63;
+	outline: none;
+	width: min(60vw, 260px);
+	box-shadow: inset 0 2px 6px rgba(109, 84, 132, 0.12);
+}
+
+#gateInput:focus {
+	box-shadow: inset 0 2px 6px rgba(109, 84, 132, 0.12), 0 0 0 3px rgba(255, 194, 158, 0.7);
+}
+
+#gateForm button, #viewerClose {
+	font: inherit;
+	font-size: 1.1rem;
+	font-weight: 600;
+	padding: 12px 26px;
+	border: none;
+	border-radius: 999px;
+	background: #ffb894;
+	color: #6b3f28;
+	cursor: pointer;
+	transition: transform 0.15s;
+}
+
+#gateForm button:active, #viewerClose:active {
+	transform: scale(0.94);
+}
+
+#gateForm button:focus-visible, #viewerClose:focus-visible, #gateInput:focus-visible, #circle:focus-visible {
+	outline: 3px solid #8a6bb0;
+	outline-offset: 2px;
+}
+
+.gate-error {
+	margin-top: 18px;
+	font-weight: 600;
+	color: #b4577a;
+	animation: wobble 0.4s;
+}
+
+@keyframes wobble {
+	0% { transform: translateX(0); }
+	25% { transform: translateX(-7px); }
+	50% { transform: translateX(7px); }
+	75% { transform: translateX(-4px); }
+	100% { transform: translateX(0); }
+}
+
+.circle-wrap {
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+	margin-bottom: 44px;
+}
+
+#circle {
+	width: min(46vw, 190px);
+	height: min(46vw, 190px);
+	border-radius: 50%;
+	background: rgba(255, 255, 255, 0.55);
+	border: 3px dashed rgba(109, 84, 132, 0.45);
+	outline: none;
+	overflow: hidden;
+	caret-color: transparent;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	transition: transform 0.2s, border-color 0.2s;
+}
+
+#circle:focus {
+	border-color: #ffb894;
+	transform: scale(1.04);
+}
+
+#circle.busy {
+	animation: pulse 0.9s ease-in-out infinite;
+}
+
+@keyframes pulse {
+	0% { transform: scale(1); }
+	50% { transform: scale(1.07); }
+	100% { transform: scale(1); }
+}
+
+#circle img {
+	max-width: 70%;
+	max-height: 70%;
+}
+
+.hint {
+	margin-top: 16px;
+	font-size: 0.95rem;
+	color: #7a678a;
+	max-width: 260px;
+	text-align: center;
+}
+
+#grid {
+	display: grid;
+	grid-template-columns: repeat(auto-fill, minmax(110px, 1fr));
+	gap: 14px;
+	width: min(100%, 860px);
+}
+
+#grid button {
+	aspect-ratio: 1;
+	border: none;
+	border-radius: 22px;
+	background: rgba(255, 255, 255, 0.45);
+	padding: 12px;
+	cursor: pointer;
+	transition: transform 0.15s;
+}
+
+#grid button:hover {
+	transform: rotate(-3deg) scale(1.05);
+}
+
+#grid button img {
+	width: 100%;
+	height: 100%;
+	object-fit: contain;
+}
+
+#viewer {
+	position: fixed;
+	inset: 0;
+	z-index: 10;
+	background: rgba(91, 74, 99, 0.45);
+	backdrop-filter: blur(6px);
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	padding: 20px;
+}
+
+#viewerCard {
+	background: rgba(255, 250, 246, 0.95);
+	border-radius: 32px;
+	padding: 28px;
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+	gap: 10px;
+	max-width: 340px;
+	width: 100%;
+	text-align: center;
+}
+
+#viewerCard p {
+	font-weight: 600;
+	font-size: 1.2rem;
+	color: #6d5484;
+}
+
+#viewerCard .sub {
+	font-weight: 500;
+	font-size: 0.85rem;
+	color: #8a7a96;
+}
+
+#viewerImg {
+	width: 220px;
+	height: 220px;
+	object-fit: contain;
+}
+
+#viewerClose {
+	margin-top: 8px;
+}

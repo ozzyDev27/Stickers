@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<title>Stickers!</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+<div class="grain"></div>
+<main id="gate" class="screen">
+	<h1 class="wordmark">Stickers!</h1>
+	<form id="gateForm">
+		<input id="gateInput" type="password" placeholder="password" autocomplete="off" autocapitalize="none" spellcheck="false">
+		<button type="submit">enter</button>
+	</form>
+	<p id="gateError" class="gate-error" hidden>that's not it</p>
+</main>
+<main id="board" class="screen" hidden>
+	<h1 class="wordmark small">Stickers!</h1>
+	<div class="circle-wrap">
+		<div id="circle" contenteditable="true" enterkeyhint="done"></div>
+		<p class="hint">tap the circle, then send a sticker from your keyboard</p>
+	</div>
+	<div id="grid"></div>
+</main>
+<div id="viewer" hidden>
+	<div id="viewerCard">
+		<img id="viewerImg" alt="sticker">
+		<p>save as sticker?</p>
+		<p class="sub">press and hold the image, then add it to your stickers</p>
+		<button id="viewerClose">close</button>
+	</div>
+</div>
+<script src="app.js"></script>
+</body>
+</html>
