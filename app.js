@@ -1,3 +1,4 @@
+const status = document.getElementById("status")
 const board = document.getElementById("board")
 const circle = document.getElementById("circle")
 const grid = document.getElementById("grid")
@@ -5,31 +6,49 @@ const viewer = document.getElementById("viewer")
 const viewerImg = document.getElementById("viewerImg")
 const viewerClose = document.getElementById("viewerClose")
 
+function show(msg) {
+	status.hidden = !msg
+	status.textContent = msg || ""
+}
+
 async function init() {
-	if (location.search.includes("grant=")) {
+	if (location.search) {
 		history.replaceState(null, "", location.pathname)
 	}
-	let session = { loggedIn: false, hasAccess: false }
+	let session
 	try {
 		const res = await fetch("/api/session", { credentials: "include" })
-		if (res.ok) session = await res.json()
-	} catch {}
+		if (!res.ok) throw new Error("session " + res.status)
+		session = await res.json()
+	} catch (err) {
+		show("couldn't reach the sticker server (" + err.message + ")")
+		return
+	}
 	if (!session.loggedIn) {
+		show("sending you to log in...")
 		location.href = "https://ozzyabc.xyz/login?2"
 		return
 	}
 	if (!session.hasAccess) {
+		show("sending you to the password page...")
 		location.href = "https://ozzyabc.xyz/password/2"
 		return
 	}
+	show("")
 	board.hidden = false
 	loadGrid()
 }
 
 async function loadGrid() {
-	const res = await fetch("/api/list", { credentials: "include" })
-	if (!res.ok) return
-	const data = await res.json()
+	let data
+	try {
+		const res = await fetch("/api/list", { credentials: "include" })
+		if (!res.ok) throw new Error("list " + res.status)
+		data = await res.json()
+	} catch (err) {
+		show("couldn't load stickers (" + err.message + ")")
+		return
+	}
 	grid.replaceChildren()
 	for (const sticker of data.stickers) {
 		grid.appendChild(makeCell(sticker))
@@ -40,6 +59,7 @@ function makeCell(sticker) {
 	const cell = document.createElement("div")
 	cell.className = "cell"
 	const btn = document.createElement("button")
+	btn.type = "button"
 	const img = document.createElement("img")
 	img.loading = "lazy"
 	img.alt = "sticker"
@@ -86,7 +106,11 @@ async function toPngBlob(blob) {
 	return new Promise(resolve => canvas.toBlob(resolve, "image/png"))
 }
 
+let uploading = false
+
 async function upload(blob) {
+	if (uploading) return
+	uploading = true
 	circle.classList.add("busy")
 	try {
 		const png = await toPngBlob(blob)
@@ -96,37 +120,38 @@ async function upload(blob) {
 			headers: { "Content-Type": "image/png" },
 			body: png
 		})
-		if (res.ok) {
-			const data = await res.json()
-			grid.prepend(makeCell(data.sticker))
-		}
+		if (!res.ok) throw new Error("upload " + res.status)
+		const data = await res.json()
+		grid.prepend(makeCell(data.sticker))
+		show("")
+	} catch (err) {
+		show("upload failed (" + err.message + ")")
 	} finally {
+		uploading = false
 		circle.classList.remove("busy")
 		circle.replaceChildren()
 	}
 }
 
 circle.addEventListener("paste", e => {
+	e.preventDefault()
 	const items = e.clipboardData && e.clipboardData.items
 	if (!items) return
 	for (const item of items) {
 		if (item.type.startsWith("image/")) {
-			e.preventDefault()
 			upload(item.getAsFile())
 			return
 		}
 	}
-	e.preventDefault()
 })
 
 const watcher = new MutationObserver(() => {
-	const imgs = circle.querySelectorAll("img")
-	for (const img of imgs) {
-		const src = img.getAttribute("src")
-		if (!src) continue
-		img.remove()
-		fetch(src).then(r => r.blob()).then(upload)
-	}
+	const img = circle.querySelector("img")
+	if (!img) return
+	const src = img.getAttribute("src")
+	img.remove()
+	if (!src) return
+	fetch(src).then(r => r.blob()).then(upload).catch(() => show("couldn't read that sticker"))
 })
 watcher.observe(circle, { childList: true, subtree: true })
 

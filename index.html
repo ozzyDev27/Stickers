@@ -11,13 +11,16 @@
 </head>
 <body>
 <div class="grain"></div>
-<main id="board" class="screen" hidden>
-	<h1 class="wordmark small">Stickers!</h1>
-	<div class="circle-wrap">
-		<div id="circle" contenteditable="true" enterkeyhint="done"></div>
-		<p class="hint">tap the circle, then send a sticker from your keyboard</p>
+<main class="screen">
+	<h1 class="wordmark">Stickers!</h1>
+	<p id="status">checking who you are...</p>
+	<div id="board" hidden>
+		<div class="circle-wrap">
+			<div id="circle" contenteditable="true" enterkeyhint="done"></div>
+			<p class="hint">tap the circle, then send a sticker from your keyboard</p>
+		</div>
+		<div id="grid"></div>
 	</div>
-	<div id="grid"></div>
 </main>
 <div id="viewer" hidden>
 	<div id="viewerCard">

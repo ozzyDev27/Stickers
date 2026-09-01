@@ -21,9 +21,9 @@ body {
 }
 
 @keyframes drift {
-	0% { background-position: 0% 20%; filter: hue-rotate(0deg); }
-	50% { background-position: 100% 80%; filter: hue-rotate(24deg); }
-	100% { background-position: 0% 20%; filter: hue-rotate(0deg); }
+	0% { background-position: 0% 20%; }
+	50% { background-position: 100% 80%; }
+	100% { background-position: 0% 20%; }
 }
 
 @media (prefers-reduced-motion: reduce) {
@@ -48,45 +48,32 @@ body {
 	display: flex;
 	flex-direction: column;
 	align-items: center;
-	padding: 12vh 20px 60px;
+	padding: 8vh 20px 60px;
 	min-height: 100vh;
 }
 
 .wordmark {
-	font-size: clamp(3rem, 9vw, 5rem);
+	font-size: clamp(2.4rem, 8vw, 4rem);
 	font-weight: 700;
 	letter-spacing: -0.02em;
 	color: #6d5484;
 	text-shadow: 0 2px 0 rgba(255, 255, 255, 0.5);
 	transform: rotate(-2deg);
-	margin-bottom: 42px;
+	margin-bottom: 30px;
 }
 
-.wordmark.small {
-	font-size: clamp(2rem, 6vw, 2.8rem);
-	margin-bottom: 28px;
-}
-
-#viewerClose {
-	font: inherit;
-	font-size: 1.1rem;
+#status {
 	font-weight: 600;
-	padding: 12px 26px;
-	border: none;
-	border-radius: 999px;
-	background: #ffb894;
-	color: #6b3f28;
-	cursor: pointer;
-	transition: transform 0.15s;
+	color: #7a678a;
+	text-align: center;
+	margin-bottom: 24px;
 }
 
-#viewerClose:active {
-	transform: scale(0.94);
-}
-
-#viewerClose:focus-visible, #circle:focus-visible {
-	outline: 3px solid #8a6bb0;
-	outline-offset: 2px;
+#board {
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+	width: 100%;
 }
 
 .circle-wrap {
@@ -114,6 +101,11 @@ body {
 #circle:focus {
 	border-color: #ffb894;
 	transform: scale(1.04);
+}
+
+#circle:focus-visible {
+	outline: 3px solid #8a6bb0;
+	outline-offset: 2px;
 }
 
 #circle.busy {
@@ -164,6 +156,11 @@ body {
 
 #grid button:hover {
 	transform: rotate(-3deg) scale(1.05);
+}
+
+#grid button:focus-visible {
+	outline: 3px solid #8a6bb0;
+	outline-offset: 2px;
 }
 
 #grid button img {
@@ -236,5 +233,24 @@ body {
 }
 
 #viewerClose {
+	font: inherit;
+	font-size: 1.1rem;
+	font-weight: 600;
+	padding: 12px 26px;
+	border: none;
+	border-radius: 999px;
+	background: #ffb894;
+	color: #6b3f28;
+	cursor: pointer;
+	transition: transform 0.15s;
 	margin-top: 8px;
+}
+
+#viewerClose:active {
+	transform: scale(0.94);
+}
+
+#viewerClose:focus-visible {
+	outline: 3px solid #8a6bb0;
+	outline-offset: 2px;
 }
