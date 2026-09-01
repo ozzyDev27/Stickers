@@ -120,6 +120,10 @@ async function upload(blob) {
 			headers: { "Content-Type": "image/png" },
 			body: png
 		})
+		if (res.status === 409) {
+			show("that sticker is already here!")
+			return
+		}
 		if (!res.ok) throw new Error("upload " + res.status)
 		const data = await res.json()
 		grid.prepend(makeCell(data.sticker))

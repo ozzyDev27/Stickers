@@ -16,6 +16,15 @@ const fileRe = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}\.p
 
 fs.mkdirSync(imgDir, { recursive: true })
 
+const hashes = new Map()
+for (const file of fs.readdirSync(imgDir)) {
+	if (!fileRe.test(file)) continue
+	try {
+		const hash = crypto.createHash("sha256").update(fs.readFileSync(path.join(imgDir, file))).digest("hex")
+		hashes.set(hash, file)
+	} catch {}
+}
+
 function readJson(file, fallback) {
 	try {
 		return JSON.parse(fs.readFileSync(file, "utf8"))
@@ -164,8 +173,14 @@ const server = http.createServer(async (req, res) => {
 				send(res, 415, { ok: false })
 				return
 			}
+			const hash = crypto.createHash("sha256").update(body).digest("hex")
+			if (hashes.has(hash)) {
+				send(res, 409, { ok: false, duplicate: true })
+				return
+			}
 			const file = crypto.randomUUID() + ".png"
 			fs.writeFileSync(path.join(imgDir, file), body)
+			hashes.set(hash, file)
 			const entry = { file, name: me.name || "someone", picture: me.picture || "", time: Math.floor(Date.now() / 1000) }
 			const list = readJson(indexFile, [])
 			list.push(entry)

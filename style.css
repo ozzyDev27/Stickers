@@ -10,6 +10,12 @@
 
 html, body {
 	min-height: 100%;
+	max-width: 100%;
+	overflow-x: hidden;
+}
+
+html {
+	background: #e6d5f7;
 }
 
 body {
@@ -18,6 +24,7 @@ body {
 	background: linear-gradient(130deg, #e6d5f7, #ffd9c4, #f3d3ea, #d9e3fb);
 	background-size: 300% 300%;
 	animation: drift 30s ease-in-out infinite;
+	padding-top: env(safe-area-inset-top);
 }
 
 @keyframes drift {
@@ -27,7 +34,7 @@ body {
 }
 
 @media (prefers-reduced-motion: reduce) {
-	body {
+	body, .wordmark {
 		animation: none;
 	}
 }
@@ -58,8 +65,14 @@ body {
 	letter-spacing: -0.02em;
 	color: #6d5484;
 	text-shadow: 0 2px 0 rgba(255, 255, 255, 0.5);
-	transform: rotate(-2deg);
+	animation: sway 4s ease-in-out infinite;
 	margin-bottom: 30px;
+}
+
+@keyframes sway {
+	0% { transform: rotate(-3deg); }
+	50% { transform: rotate(3deg); }
+	100% { transform: rotate(-3deg); }
 }
 
 #status {
