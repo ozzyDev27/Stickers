@@ -1,0 +1,23 @@
+refer to server.md to see how the server works. I have already described how I want the sticker website to work, so continue working on that.
+Do not SSH directly into the server, tell me what I should do on the server.
+
+Make a static html website that allows the user to click a circle (it is actually a text input shaped as a circle) and then they press their iOS stickers with their keyboards and it uploads them to a backend database. On this same page, you can see a grid of all the stickers everyone's uploaded.
+
+The user must have a google login (redirect to ozzyabc.xyz/login?3 if they are not already logged in), and that will send them to ozzyabc.xyz/password/2. If they are already logged in, send them to ozzyabc.xyz/password/2 directly. This will give them something in the users.json. users.json is located in ~/databases/portfolio/users.json. Here is the format:
+{
+        "102862133662667319893": {
+                "name": "ozzy",
+                "email": "businessozzy27@gmail.com",
+                "picture": "https://lh3.googleusercontent.com/a/ACg8ocJ_yuCVNoXm_wir3-ClZ4bcnKyY5j1EtHigw4iOgTyq9MN2DnE=s96-c",
+                "muted": false,
+                "access": {
+                    "2": "default"
+                }
+        }
+}
+If they have anything within access that has 2, then they have access.
+If they are already logged in and already have access, there is no need to send them to the passwords page or login page.
+
+The database will be located within ~/databases/stickers/
+
+Visually, the website will use a noise texture with a very slowly shifting gradient that is very light, pastel colored.

@@ -1,9 +1,3 @@
-let password = null
-
-const gate = document.getElementById("gate")
-const gateForm = document.getElementById("gateForm")
-const gateInput = document.getElementById("gateInput")
-const gateError = document.getElementById("gateError")
 const board = document.getElementById("board")
 const circle = document.getElementById("circle")
 const grid = document.getElementById("grid")
@@ -11,50 +5,63 @@ const viewer = document.getElementById("viewer")
 const viewerImg = document.getElementById("viewerImg")
 const viewerClose = document.getElementById("viewerClose")
 
-gateForm.addEventListener("submit", async e => {
-	e.preventDefault()
-	const pw = gateInput.value.trim()
-	if (!pw) return
-	const res = await fetch("/api/enter", {
-		method: "POST",
-		headers: { "Content-Type": "application/json" },
-		body: JSON.stringify({ password: pw })
-	})
-	if (res.ok) {
-		password = pw
-		gate.hidden = true
-		board.hidden = false
-		loadGrid()
-	} else {
-		gateError.hidden = false
-		gateError.style.animation = "none"
-		void gateError.offsetWidth
-		gateError.style.animation = ""
+async function init() {
+	if (location.search.includes("grant=")) {
+		history.replaceState(null, "", location.pathname)
 	}
-})
+	let session = { loggedIn: false, hasAccess: false }
+	try {
+		const res = await fetch("/api/session", { credentials: "include" })
+		if (res.ok) session = await res.json()
+	} catch {}
+	if (!session.loggedIn) {
+		location.href = "https://ozzyabc.xyz/login?2"
+		return
+	}
+	if (!session.hasAccess) {
+		location.href = "https://ozzyabc.xyz/password/2"
+		return
+	}
+	board.hidden = false
+	loadGrid()
+}
 
 async function loadGrid() {
-	const res = await fetch("/api/list?pw=" + encodeURIComponent(password))
+	const res = await fetch("/api/list", { credentials: "include" })
 	if (!res.ok) return
 	const data = await res.json()
 	grid.replaceChildren()
-	for (const file of data.stickers) {
-		grid.appendChild(makeCell(file))
+	for (const sticker of data.stickers) {
+		grid.appendChild(makeCell(sticker))
 	}
 }
 
-function makeCell(file) {
+function makeCell(sticker) {
+	const cell = document.createElement("div")
+	cell.className = "cell"
 	const btn = document.createElement("button")
 	const img = document.createElement("img")
 	img.loading = "lazy"
 	img.alt = "sticker"
-	img.src = "/api/img/" + encodeURIComponent(password) + "/" + file
+	img.src = "/api/img/" + encodeURIComponent(sticker.file)
+	img.addEventListener("error", () => cell.remove())
 	btn.appendChild(img)
 	btn.addEventListener("click", () => {
 		viewerImg.src = img.src
 		viewer.hidden = false
 	})
-	return btn
+	const by = document.createElement("p")
+	by.className = "uploader"
+	if (sticker.picture) {
+		const pic = document.createElement("img")
+		pic.src = sticker.picture
+		pic.alt = ""
+		pic.referrerPolicy = "no-referrer"
+		by.appendChild(pic)
+	}
+	by.appendChild(document.createTextNode(sticker.name || "someone"))
+	cell.append(btn, by)
+	return cell
 }
 
 viewerClose.addEventListener("click", () => {
@@ -83,14 +90,15 @@ async function upload(blob) {
 	circle.classList.add("busy")
 	try {
 		const png = await toPngBlob(blob)
-		const res = await fetch("/api/upload?pw=" + encodeURIComponent(password), {
+		const res = await fetch("/api/upload", {
 			method: "POST",
+			credentials: "include",
 			headers: { "Content-Type": "image/png" },
 			body: png
 		})
 		if (res.ok) {
 			const data = await res.json()
-			grid.prepend(makeCell(data.file))
+			grid.prepend(makeCell(data.sticker))
 		}
 	} finally {
 		circle.classList.remove("busy")
@@ -134,3 +142,5 @@ circle.addEventListener("input", () => {
 		circle.textContent = ""
 	}
 })
+
+init()
